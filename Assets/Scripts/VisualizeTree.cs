@@ -133,30 +133,24 @@ public class VisualizeTree : MonoBehaviour
         }
     }
 
-    private void InOrder(TreeNode<string, string> node, GameObject parent, float xPos, float yPos)
+    private void InOrder(TreeNode<string, string> node, int depth, ref int xIndex)
     {
-        if (node != null)
-        {
-            GameObject me = Instantiate(nodePrefab, new Vector3(xPos, yPos, 0f), Quaternion.identity);
-            me.GetComponentInChildren<TextMeshPro>().text = $"K: {node.Key}\nV: {node.Value}\nH: {node.Height}";
+        //if (node == null) return;
 
-            if (parent != null)
-            {
-                LineRenderer line = me.GetComponent<LineRenderer>();
-                line.positionCount = 2;
-                line.SetPosition(0, me.transform.position);
-                line.SetPosition(1, parent.transform.position);
-            }
-            if (node.Left != null)
-            {
-                InOrder(node.Left, me, xPos - 4f * node.Left.Height, yPos - 3f);
-            }
-            if (node.Right != null)
-            {
-                InOrder(node.Right, me, xPos + 4f * node.Right.Height, yPos - 3f);
-            }
-        }
+        //// TODO: 왼쪽 서브트리 먼저 방문 (depth + 1)
+        ///* ??? */
+        //xIndex--;
+        //InOrder(node.Left, depth + 1, ref xIndex);
+
+        //// TODO: 자신의 좌표 기록 — x는 xIndex 기반, y는 depth 기반
+        //nodePositions[node] = new Vector3(/* ??? */, /* ??? */, 0f);
+        //xIndex++;
+
+        //// TODO: 오른쪽 서브트리 방문 (depth + 1)
+        ///* ??? */
+        //;
     }
+
 
     private void Draw()
     {
