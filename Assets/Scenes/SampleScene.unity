@@ -163,10 +163,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1107d9f8e8a1eb4ba92a0107d5c38b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VisualizeTree
-  type: 0
+  type: 1
   nodePrefab: {fileID: 8153583122447597108, guid: f5d479e6b126a15488315a34e148b223, type: 3}
-  horizontalSpacing: 2
-  verticalSpacing: 2
+  horizontalSpacing: 3
+  verticalSpacing: 3
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
-using System.Collections.Generic;
+using UnityEngine.InputSystem;
+using static UnityEngine.Rendering.DebugUI;
 using Random = UnityEngine.Random;
 public class VisualizeTree : MonoBehaviour
 {
@@ -21,7 +23,7 @@ public class VisualizeTree : MonoBehaviour
     
     void Start()
     {
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 20; i++)
         {
             bst[(Random.Range(0, 100).ToString())] = (Random.Range(0, 100)).ToString();
         }
@@ -31,9 +33,9 @@ public class VisualizeTree : MonoBehaviour
                 nodePositions.Clear();
                 Pow(bst.root, Vector3.zero, bst.root.Height);
                 break;
-                //case Type.Level:
-                //    Level(bst.root, null, 0f, 0f);
-                //    break;
+            case Type.Level:
+                Level(bst.root);
+                break;
                 //case Type.InOrder:
                 //    InOrder(bst.root, null, 0f, 0f);
                 //    break;
@@ -72,62 +74,62 @@ public class VisualizeTree : MonoBehaviour
         }
     }
 
-    private void Draw()
+    private void Level(TreeNode<string, string> root)
     {
-        foreach (TreeNode<string, string> node in nodePositions.Keys)
+        if (root != null)
         {
-            GameObject me = Instantiate(nodePrefab, nodePositions[node], Quaternion.identity);
-            
-            if (node.Left != null)
-            {
-                CreateLine(nodePositions[node], nodePositions[node.Left]);
-            }
-            if (node.Right != null)
-            {
-                CreateLine(nodePositions[node], nodePositions[node.Right]);
-            }
-        }
-    }
+            var levels = new List<List<TreeNode<string, string>>>();
+            var queue = new Queue<(TreeNode<string, string> node, int depth)>();
 
-    private void CreateLine(Vector3 from, Vector3 to)
-    {
-        GameObject lineObj = new GameObject("Line");
-        LineRenderer line = lineObj.AddComponent<LineRenderer>();
+            queue.Enqueue((root, 0));
 
-        line.positionCount = 2;
-        line.SetPosition(0, from);
-        line.SetPosition(1, to);
-
-        line.startWidth = 0.2f;
-        line.endWidth = 0.2f;
-        line.material = new Material(Shader.Find("Sprites/Default"));
-        line.startColor = Color.white;
-        line.endColor = Color.white;
-    }
-
-    private void Level(TreeNode<string, string> node, GameObject parent, float yPos, float stack)
-    {
-        if (node != null)
-        {
-            float xPos = 3f * stack;
-            GameObject me = Instantiate(nodePrefab, new Vector3(xPos, yPos, 0f), Quaternion.identity);
-            me.GetComponentInChildren<TextMeshPro>().text = $"K: {node.Key}\nV: {node.Value}\nH: {node.Height}";
-
-            if (parent != null)
+            while (queue.Count > 0)
             {
-                LineRenderer line = me.GetComponent<LineRenderer>();
-                line.positionCount = 2;
-                line.SetPosition(0, me.transform.position);
-                line.SetPosition(1, parent.transform.position);
+                var (node, depth) = queue.Dequeue();
+                while (levels.Count <= depth)
+                {
+                    levels.Add(new List<TreeNode<string, string>>());
+                }
+                levels[depth].Add(node);
+
+                if (node.Left != null)
+                {
+                    queue.Enqueue((node.Left, depth + 1));
+                }
+                if (node.Right != null)
+                {
+                    queue.Enqueue((node.Right, depth + 1));
+                }
             }
-            if (node.Left != null)
+            for (int depth = 0; depth < levels.Count; depth++)
             {
-                Level(node.Left, me, yPos - 3f, 2f * stack);
+                float y = -depth * verticalSpacing;
+                var row = levels[depth];
+
+                for (int i = 0; i < row.Count; i++)
+                {
+                    nodePositions[row[i]] = new Vector3(i * horizontalSpacing, y, 0f);
+                }
             }
-            if (node.Right != null)
-            {
-                Level(node.Right, me, yPos - 3f, 2f * stack + 1);
-            }
+            //float xPos = 3f * stack;
+            //GameObject me = Instantiate(nodePrefab, new Vector3(xPos, yPos, 0f), Quaternion.identity);
+            //me.GetComponentInChildren<TextMeshPro>().text = $"K: {node.Key}\nV: {node.Value}\nH: {node.Height}";
+
+            //if (parent != null)
+            //{
+            //    LineRenderer line = me.GetComponent<LineRenderer>();
+            //    line.positionCount = 2;
+            //    line.SetPosition(0, me.transform.position);
+            //    line.SetPosition(1, parent.transform.position);
+            //}
+            //if (node.Left != null)
+            //{
+            //    Level(node.Left, me, yPos - 3f, 2f * stack);
+            //}
+            //if (node.Right != null)
+            //{
+            //    Level(node.Right, me, yPos - 3f, 2f * stack + 1);
+            //}
         }
     }
 
@@ -154,5 +156,38 @@ public class VisualizeTree : MonoBehaviour
                 InOrder(node.Right, me, xPos + 4f * node.Right.Height, yPos - 3f);
             }
         }
+    }
+
+    private void Draw()
+    {
+        foreach (TreeNode<string, string> node in nodePositions.Keys)
+        {
+            GameObject me = Instantiate(nodePrefab, nodePositions[node], Quaternion.identity);
+
+            if (node.Left != null)
+            {
+                CreateLine(nodePositions[node], nodePositions[node.Left]);
+            }
+            if (node.Right != null)
+            {
+                CreateLine(nodePositions[node], nodePositions[node.Right]);
+            }
+        }
+    }
+
+    private void CreateLine(Vector3 from, Vector3 to)
+    {
+        GameObject lineObj = new GameObject("Line");
+        LineRenderer line = lineObj.AddComponent<LineRenderer>();
+
+        line.positionCount = 2;
+        line.SetPosition(0, from);
+        line.SetPosition(1, to);
+
+        line.startWidth = 0.2f;
+        line.endWidth = 0.2f;
+        line.material = new Material(Shader.Find("Sprites/Default"));
+        line.startColor = Color.white;
+        line.endColor = Color.white;
     }
 }
