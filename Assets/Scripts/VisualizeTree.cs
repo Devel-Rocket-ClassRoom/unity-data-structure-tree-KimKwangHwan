@@ -36,9 +36,10 @@ public class VisualizeTree : MonoBehaviour
             case Type.Level:
                 Level(bst.root);
                 break;
-                //case Type.InOrder:
-                //    InOrder(bst.root, null, 0f, 0f);
-                //    break;
+            case Type.InOrder:
+                int xIndex = 0;
+                InOrder(bst.root, 0, ref xIndex);
+                break;
         }
         Draw();
     }
@@ -135,20 +136,20 @@ public class VisualizeTree : MonoBehaviour
 
     private void InOrder(TreeNode<string, string> node, int depth, ref int xIndex)
     {
-        //if (node == null) return;
+        if (node == null) return;
 
-        //// TODO: 왼쪽 서브트리 먼저 방문 (depth + 1)
-        ///* ??? */
-        //xIndex--;
-        //InOrder(node.Left, depth + 1, ref xIndex);
+        // TODO: 왼쪽 서브트리 먼저 방문 (depth + 1)
+        /* ??? */
+        if (node.Left != null)
+            InOrder(node.Left, depth + 1, ref xIndex);
 
-        //// TODO: 자신의 좌표 기록 — x는 xIndex 기반, y는 depth 기반
-        //nodePositions[node] = new Vector3(/* ??? */, /* ??? */, 0f);
-        //xIndex++;
+        // TODO: 자신의 좌표 기록 — x는 xIndex 기반, y는 depth 기반
+        nodePositions[node] = new Vector3(xIndex * horizontalSpacing, -depth * verticalSpacing, 0f);
+        xIndex++;
 
-        //// TODO: 오른쪽 서브트리 방문 (depth + 1)
-        ///* ??? */
-        //;
+        // TODO: 오른쪽 서브트리 방문 (depth + 1)
+        if (node.Right != null)
+            InOrder(node.Right, depth + 1, ref xIndex);
     }
 
 
@@ -157,7 +158,7 @@ public class VisualizeTree : MonoBehaviour
         foreach (TreeNode<string, string> node in nodePositions.Keys)
         {
             GameObject me = Instantiate(nodePrefab, nodePositions[node], Quaternion.identity);
-
+            me.GetComponentInChildren<TextMeshPro>().text = $"K: {node.Key}\nV: {node.Value}\nH: {node.Height}";
             if (node.Left != null)
             {
                 CreateLine(nodePositions[node], nodePositions[node.Left]);
