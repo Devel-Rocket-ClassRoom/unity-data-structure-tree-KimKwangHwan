@@ -55,23 +55,6 @@ public class VisualizeTree : MonoBehaviour
 
             Pow(node.Left, childBase + Vector3.left * offset, height - 1);
             Pow(node.Right, childBase + Vector3.right * offset, height - 1);
-            //GameObject me = Instantiate(nodePrefab, new Vector3(xPos, yPos, 0f), Quaternion.identity);
-            //me.GetComponentInChildren<TextMeshPro>().text = $"K: {node.Key}\nV: {node.Value}\nH: {node.Height}";
-            //if (parent != null)
-            //{
-            //    LineRenderer line = me.GetComponent<LineRenderer>();
-            //    line.positionCount = 2;
-            //    line.SetPosition(0, me.transform.position);
-            //    line.SetPosition(1, parent.transform.position);
-            //}
-            //if (node.Left != null)
-            //{
-            //    Pow(node.Left, me, xPos - Mathf.Pow(2, node.Height), yPos - 4f);
-            //}
-            //if (node.Right != null)
-            //{
-            //    Pow(node.Right, me, xPos + Mathf.Pow(2, node.Height), yPos - 4f);
-            //}
         }
     }
 
@@ -112,25 +95,6 @@ public class VisualizeTree : MonoBehaviour
                     nodePositions[row[i]] = new Vector3(i * horizontalSpacing, y, 0f);
                 }
             }
-            //float xPos = 3f * stack;
-            //GameObject me = Instantiate(nodePrefab, new Vector3(xPos, yPos, 0f), Quaternion.identity);
-            //me.GetComponentInChildren<TextMeshPro>().text = $"K: {node.Key}\nV: {node.Value}\nH: {node.Height}";
-
-            //if (parent != null)
-            //{
-            //    LineRenderer line = me.GetComponent<LineRenderer>();
-            //    line.positionCount = 2;
-            //    line.SetPosition(0, me.transform.position);
-            //    line.SetPosition(1, parent.transform.position);
-            //}
-            //if (node.Left != null)
-            //{
-            //    Level(node.Left, me, yPos - 3f, 2f * stack);
-            //}
-            //if (node.Right != null)
-            //{
-            //    Level(node.Right, me, yPos - 3f, 2f * stack + 1);
-            //}
         }
     }
 
