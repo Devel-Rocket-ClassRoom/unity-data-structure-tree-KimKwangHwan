@@ -1,18 +1,28 @@
 using System.Collections.Generic;
 using System;
-using System.Collections;
-using System.Linq;
-using Unity.Jobs;
-public class PriorityQueue<TElement, TPriority> where TPriority : IComparable<TPriority>
+
+public class PriorityQueue<TElement, TPriority>
 {
     // 부모 (i - 1) / 2
     // 왼쪽 2 * i + 1
     // 오른쪽 2 * i + 2
     private List<(TElement, TPriority)> data = new List<(TElement, TPriority)>();
+    private readonly IComparer<TPriority> comparer;
+    // IComparer
+    public int Count { get => data.Count; }
+
     private int Left(int i) => 2 * i + 1;
     private int Right(int i) => 2 * i + 2;
     private int Parent(int i) => (i - 1) / 2;
-    public int Count { get => data.Count; }
+    public PriorityQueue()
+    {
+        comparer = Comparer<TPriority>.Default;
+    }
+
+    public PriorityQueue(IComparer<TPriority> comparer)
+    {
+        this.comparer = comparer;
+    }
 
     public void Enqueue(TElement element, TPriority priority)
     {
@@ -28,8 +38,8 @@ public class PriorityQueue<TElement, TPriority> where TPriority : IComparable<TP
             }
 
             int parent = Parent(index);
+            int compare = comparer.Compare(data[index].Item2, data[parent].Item2); 
 
-            int compare = data[index].Item2.CompareTo(data[parent].Item2);
             if (compare < 0)
             {
                 (TElement, TPriority) tmpData = data[index];
@@ -46,6 +56,10 @@ public class PriorityQueue<TElement, TPriority> where TPriority : IComparable<TP
 
     public TElement Dequeue()
     {
+        if (data.Count == 0)
+        {
+            throw new InvalidOperationException("큐가 비어 있습니다.");
+        }
         TElement returnData = data[0].Item1;
 
         data[0] = data[data.Count - 1];
@@ -61,11 +75,11 @@ public class PriorityQueue<TElement, TPriority> where TPriority : IComparable<TP
 
             if (left < data.Count && right < data.Count)
             {
-                int compare = data[left].Item2.CompareTo(data[right].Item2);
+                int compare = comparer.Compare(data[left].Item2, data[right].Item2);
 
                 smallIndex = compare <= 0 ? left : right;
 
-                int compare2 = data[index].Item2.CompareTo(data[smallIndex].Item2);
+                int compare2 = comparer.Compare(data[smallIndex].Item2, data[index].Item2);
 
                 if (compare2 < 0)
                 {
@@ -81,7 +95,7 @@ public class PriorityQueue<TElement, TPriority> where TPriority : IComparable<TP
             }
             else if (left < data.Count)
             {
-                int compare = data[index].Item2.CompareTo(data[left].Item2);
+                int compare = comparer.Compare(data[left].Item2, data[index].Item2);
 
                 if (compare < 0)
                 {
@@ -103,8 +117,13 @@ public class PriorityQueue<TElement, TPriority> where TPriority : IComparable<TP
 
         return returnData;
     }
+
     public TElement Peek()
     {
+        if (data.Count == 0)
+        {
+            throw new InvalidOperationException("큐가 비어 있습니다.");
+        }
         return data[0].Item1;
     }
     public void Clear()
@@ -117,7 +136,7 @@ public class PriorityQueue<TElement, TPriority> where TPriority : IComparable<TP
         string result = string.Empty;
         for (int i = 0; i < data.Count; i++)
         {
-            result += data[i].ToString() + ", ";
+            result += data[i].Item1.ToString() + ", ";
         }
         return result;
     }
